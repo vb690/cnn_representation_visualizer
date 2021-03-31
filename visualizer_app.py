@@ -181,34 +181,55 @@ def run_app():
     """Run Streamlit app
     """
     st.set_page_config(
-        page_title='CNN Representations Visualizer',
+        page_title='CNN Anatomy Visualizer',
         page_icon='🤖',
         layout='wide'
     )
 
-    st.title('Convolutional Neural Network Learned Representations')
+    st.title('Anatomy of a Convolutional Neural Network')
 
-    col1_description, col2_image = st.beta_columns(2)
-    banner = Image.open('images//header.png')
-    col1_description.markdown(
+    col1_mnsit, col2_lenet = st.beta_columns(2)
+    lenet = Image.open('images//header.png')
+    fmnist = Image.open('images//fashion_mnist.png')
+    col1_mnsit.header('Fashion-MNSIT Dataset')
+    col1_mnsit.markdown(
         """
-        LeNet-5 is one of the earliest convolutional neural network
-        architecture propsed by Yann LeCun et al. in 1989. It consists of
-        seven layers implementing the basic operations of convolutional neural
-        network: convolution, pooling and fully connected. The lightweight
-        version employed for this project includes:
-
-        * First Convolution: 4 filters derived applying a 5 X 5 kernel.
-        * Max Pooling: 2 X 2 downsampling.
-        * Second Convolution: 9 filters derived applying a 5 X 5 kernel.
-        * Max Pooling: 2 X 2 downsampling
-        * Fully Connectd: 3 layers with 80, 40 and 20 hidden units.
-          
-        All the layers use a simoid activation function.
+        Fashion-MNIST is a dataset of Zalando's article images consisting of
+        a training set of 60,000 examples and a test set of 10,000 examples.
+        Each example is a 28x28 grayscale image, associated with a label
+        from 10 classes. Fashion-MNIST is intended to serve as a direct drop-in
+        replacement for the original MNIST dataset for overcoming some of its
+        limitations (e.g. simplicity and over-use).
         """
     )
-    col2_image.image(banner, caption='LeNet-5')
-
+    col1_mnsit.image(fmnist, caption='Fashion-MNIST')
+    col2_lenet.header('LeNet-5 Convolutional Neural Network')
+    col2_lenet.markdown(
+        """
+        LeNet-5 is one of the earliest convolutional neural network (CNN)
+        architecture propsed by Yann LeCun et al. in 1989. It consists of
+        seven layers implementing the basic operations of found in CNNs:
+        convolution, pooling and fully connected. The lightweight
+        architecture employed for this project includes
+        """
+    )
+    col2_lenet.image(lenet, caption='LeNet-5')
+    col2_lenet.markdown(
+        """
+        | Components |  |
+        |-|-|
+        | Input Image | Grayscale 28x28 images |
+        | First Convolution | Four filters from a 5x5 kernel |
+        | Max Pooling | Spatial subsampling from a 2x2 window |
+        | Second Convolution | Nine filters from a 5x5 kernel |
+        | Max Pooling | Spatial subsampling from a 2x2 window |
+        | Fully Connected | Three fully connected layers with \
+            80, 40 and 20 hidden units |
+        | Activation |  Each layer with trainable parameters is \
+            followed by a sigmoid function|
+        | Output | Fully connected layer with softmax activation function|
+        """
+    )
     images, conv_1, conv_2, embedding_df = load_data('fashion_mnist')
 
     st.sidebar.title('Visualizer Parameters')
