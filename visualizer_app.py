@@ -187,8 +187,11 @@ def run_app():
     )
 
     st.title('Convolutional Neural Network Learned Representations')
+
+    col1_description, col2_image = st.beta_columns(2)
     banner = Image.open('images//header.png')
-    st.image(banner, caption='LeNet-5')
+    col2_image.image(banner, caption='LeNet-5')
+
     images, conv_1, conv_2, embedding_df = load_data('fashion_mnist')
 
     st.sidebar.title('Visualizer Parameters')
