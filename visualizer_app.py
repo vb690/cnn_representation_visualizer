@@ -14,6 +14,20 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.express as px
 
+CATEGORY_MAPPER = {
+    0: 'T-shirt / Top',
+    1: 'Trouser',
+    2: 'Pullover',
+    3: 'Dresss',
+    4: 'Coat',
+    5: 'Sandal',
+    6: 'Shirt',
+    7: 'Sneaker',
+    8: 'Bag',
+    9: 'Ankle Boot'
+}
+INDEX_MAPPER = {category: index for index, category in CATEGORY_MAPPER.items()}
+
 
 def visualize_filters(embeddings, image_index=0, time_index=0, **kwargs):
     """Visulize learned filters and return figure
@@ -50,7 +64,6 @@ def visualize_embedding(embedding_df, time_index, selected_images,
                         selected_emeddings):
     """Visualize UMAP traces as 3d Plots
     """
-    selected_emeddings = [int(selected) for selected in selected_emeddings]
     embedding_df = embedding_df[embedding_df['id'] <= selected_images]
     n_embeddings = embedding_df['batcn_n'].max() + 1
     n_images = embedding_df['id'].max() + 1
@@ -73,7 +86,7 @@ def visualize_embedding(embedding_df, time_index, selected_images,
     traces = []
     for image in range(n_images):
 
-        if classes[image] in selected_emeddings:
+        if CATEGORY_MAPPER[classes[image]] in selected_emeddings:
             visible = True
         else:
             visible = 'legendonly'
@@ -88,8 +101,8 @@ def visualize_embedding(embedding_df, time_index, selected_images,
                 width=1.5
             ),
             opacity=1,
-            legendgroup=f'Category {classes[image]}',
-            name=f'Category {classes[image]}',
+            legendgroup=f'Category {CATEGORY_MAPPER[classes[image]]}',
+            name=f'Category {CATEGORY_MAPPER[classes[image]]}',
             visible=visible
         )
         traces.append(trace)
@@ -186,6 +199,8 @@ def run_app():
         layout='wide'
     )
 
+    ###########################################################################
+
     st.title('Anatomy of a Convolutional Neural Network')
 
     col1_mnsit, col2_lenet = st.beta_columns(2)
@@ -230,14 +245,20 @@ def run_app():
         | Output | Fully connected layer with softmax activation function|
         """
     )
+
+    ###########################################################################
+
     images, conv_1, conv_2, embedding_df = load_data('fashion_mnist')
 
     st.sidebar.title('Visualizer Parameters')
     st.sidebar.header('Select Input')
+
     image_index = st.sidebar.selectbox(
         'Category',
-        [i for i in range(10)]
+        [CATEGORY_MAPPER[category] for category in range(10)]
     )
+    image_index = INDEX_MAPPER[image_index]
+
     selected_images = st.sidebar.slider(
         'Images Embedded',
         min_value=1,
@@ -246,11 +267,13 @@ def run_app():
     )
     selected_emeddings = st.sidebar.multiselect(
         'Select Visualized Embeddings',
-        [i for i in range(10)] + ['all'],
+        [CATEGORY_MAPPER[category] for category in range(10)] + ['all'],
         default=['all']
     )
     if 'all' in selected_emeddings:
-        selected_emeddings = [i for i in range(10)]
+        selected_emeddings = [
+            CATEGORY_MAPPER[category] for category in range(10)
+        ]
     st.sidebar.header('Select Training Stage')
     batch_number = st.sidebar.slider(
         'Batch Number',
@@ -258,6 +281,8 @@ def run_app():
         max_value=len(conv_1) - 1,
         value=len(conv_1) - 1
     )
+
+    ###########################################################################
 
     fig_image, fig_conv_1, fig_conv_2, fig_embs = get_figures(
         images=images,
@@ -269,6 +294,7 @@ def run_app():
         selected_images=selected_images,
         selected_emeddings=selected_emeddings
     )
+
     with st.beta_expander('Convolutional Filters'):
         col1_image, col2_filters, col3_filters = st.beta_columns(3)
         col1_image.header('Input Image')
