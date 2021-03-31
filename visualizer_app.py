@@ -47,9 +47,10 @@ def visualize_filters(embeddings, image_index=0, time_index=0, **kwargs):
 
 
 def visualize_embedding(embedding_df, time_index, selected_images,
-                        image_index):
+                        selected_emeddings):
     """Visualize UMAP traces as 3d Plots
     """
+    selected_emeddings = [int(selected) for selected in selected_emeddings]
     embedding_df = embedding_df[embedding_df['id'] <= selected_images]
     n_embeddings = embedding_df['batcn_n'].max() + 1
     n_images = embedding_df['id'].max() + 1
@@ -72,7 +73,7 @@ def visualize_embedding(embedding_df, time_index, selected_images,
     traces = []
     for image in range(n_images):
 
-        if classes[image] == image_index:
+        if classes[image] in selected_emeddings:
             visible = True
         else:
             visible = 'legendonly'
@@ -102,13 +103,19 @@ def visualize_embedding(embedding_df, time_index, selected_images,
     )
     fig_embeddings.update_layout(
         width=1000,
-        height=800,
+        height=600,
         autosize=True,
         scene=dict(
+            aspectratio=dict(x=1.1, y=2.25, z=1.1),
             xaxis=dict(title='UMAP 1'),
             yaxis=dict(title='Batch Number'),
             zaxis=dict(title='UMAP 2'),
 
+        ),
+        scene_camera=dict(
+            up=dict(x=0, y=0, z=1),
+            center=dict(x=0, y=0, z=0),
+            eye=dict(x=2.5, y=0.1, z=-0.1)
         )
     )
 
@@ -133,7 +140,7 @@ def load_data(dataset_name):
 
 
 def get_figures(images, conv_1, conv_2, embedding_df, image_index,
-                batch_number, selected_images):
+                batch_number, selected_images, selected_emeddings):
     """Get all the figures objects
     """
     fig_image, ax_image = plt.subplots(
@@ -164,7 +171,7 @@ def get_figures(images, conv_1, conv_2, embedding_df, image_index,
         embedding_df=embedding_df,
         time_index=batch_number,
         selected_images=selected_images,
-        image_index=image_index
+        selected_emeddings=selected_emeddings
     )
 
     return fig_image, fig_conv_1, fig_conv_2, fig_embeddings
@@ -180,8 +187,8 @@ def run_app():
     )
 
     st.title('Convolutional Neural Network Learned Representations')
-    # banner = Image.open('images//header.png')
-    # st.image(banner, caption='LeNet-5')
+    banner = Image.open('images//header.png')
+    st.image(banner, caption='LeNet-5')
     images, conv_1, conv_2, embedding_df = load_data('fashion_mnist')
 
     st.sidebar.title('Visualizer Parameters')
@@ -196,6 +203,13 @@ def run_app():
         max_value=1000,
         value=200
     )
+    selected_emeddings = st.sidebar.multiselect(
+        'Select Visualized Embeddings',
+        [i for i in range(10)] + ['all'],
+        default=['all']
+    )
+    if 'all' in selected_emeddings:
+        selected_emeddings = [i for i in range(10)]
     st.sidebar.header('Select Training Stage')
     batch_number = st.sidebar.slider(
         'Batch Number',
@@ -211,7 +225,8 @@ def run_app():
         embedding_df=embedding_df,
         image_index=image_index,
         batch_number=batch_number,
-        selected_images=selected_images
+        selected_images=selected_images,
+        selected_emeddings=selected_emeddings
     )
     with st.beta_expander('Convolutional Filters'):
         col1_image, col2_filters, col3_filters = st.beta_columns(3)
