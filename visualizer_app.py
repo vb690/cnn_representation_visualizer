@@ -193,16 +193,18 @@ def run_app():
     col1_description.markdown(
         """
         LeNet-5 is one of the earliest convolutional neural network
-        architecture propsed by Yann LeCun et al in 1989. It consists of
+        architecture propsed by Yann LeCun et al. in 1989. It consists of
         seven layers implementing the basic operations of convolutional neural
         network: convolution, pooling and fully connected. The lightweight
         version employed for this project includes:
+
+        * First Convolution: 4 filters derived applying a 5 X 5 kernel.
+        * Max Pooling: 2 X 2 downsampling.
+        * Second Convolution: 9 filters derived applying a 5 X 5 kernel.
+        * Max Pooling: 2 X 2 downsampling
+        * Fully Connectd: 3 layers with 80, 40 and 20 hidden units.
           
-        * First Convolution
-        * Max Pooling
-        * Second Convolution
-        * Max Pooling
-        * Fully Connectd X 3
+        All the layers use a simoid activation function.
         """
     )
     col2_image.image(banner, caption='LeNet-5')
