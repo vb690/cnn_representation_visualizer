@@ -190,6 +190,10 @@ def run_app():
 
     col1_description, col2_image = st.beta_columns(2)
     banner = Image.open('images//header.png')
+    col1_description.markdown(
+        'LeNet-5 and is a simple convolutional neural network strucutre \
+        propsed by Yann LeCun.'
+    )
     col2_image.image(banner, caption='LeNet-5')
 
     images, conv_1, conv_2, embedding_df = load_data('fashion_mnist')
