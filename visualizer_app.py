@@ -191,8 +191,19 @@ def run_app():
     col1_description, col2_image = st.beta_columns(2)
     banner = Image.open('images//header.png')
     col1_description.markdown(
-        'LeNet-5 and is a simple convolutional neural network strucutre \
-        propsed by Yann LeCun.'
+        """
+        LeNet-5 is one of the earliest convolutional neural network
+        architecture propsed by Yann LeCun et al in 1989. It consists of
+        seven layers implementing the basic operations of convolutional neural
+        network: convolution, pooling and fully connected. The lightweight
+        version employed for this project includes:
+          
+        * First Convolution
+        * Max Pooling
+        * Second Convolution
+        * Max Pooling
+        * Fully Connectd X 3
+        """
     )
     col2_image.image(banner, caption='LeNet-5')
 
