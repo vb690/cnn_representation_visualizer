@@ -185,7 +185,7 @@ def visualize_embedding(embedding_df, time_index, selected_images,
                 mode='lines',
                 line=dict(
                     color=palette[classes[image]],
-                    width=1.5
+                    width=0.75
                 ),
                 opacity=1,
                 legendgroup=f'Category {CATEGORY_MAPPER[classes[image]]}',
@@ -200,7 +200,7 @@ def visualize_embedding(embedding_df, time_index, selected_images,
                 mode='lines',
                 line=dict(
                     color=palette[classes[image]],
-                    width=1.5
+                    width=0.75
                 ),
                 opacity=1,
                 legendgroup=f'Category {CATEGORY_MAPPER[classes[image]]}',
@@ -216,7 +216,7 @@ def visualize_embedding(embedding_df, time_index, selected_images,
                 mode='lines',
                 line=dict(
                     color=palette[classes[image]],
-                    width=1.5
+                    width=0.75
                 ),
                 opacity=1,
                 legendgroup=f'Category {CATEGORY_MAPPER[classes[image]]}',
@@ -255,7 +255,6 @@ def load_data(dataset_name):
     return images, conv_1, conv_2, embedding_df
 
 
-@st.cache(hash_funcs={dict: lambda _: None})
 def get_figures(images, conv_1, conv_2, embedding_df, image_index,
                 batch_number, selected_images, selected_emeddings, flatland):
     """Get all the figures objects
@@ -402,8 +401,6 @@ def run_app():
         'Visualize Embedding in Flatland',
         value=False
     )
-
-
 
     ###########################################################################
 
