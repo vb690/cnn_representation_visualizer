@@ -12,6 +12,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import plotly.express as px
 
 CATEGORY_MAPPER = {
@@ -60,9 +61,88 @@ def visualize_filters(embeddings, image_index=0, time_index=0, **kwargs):
     return fig
 
 
+def plotly_scatter_3d(traces, width=1000, height=600):
+    """Produce a plotly scatter 3d plot
+    """
+    names = set()
+    fig = go.Figure(data=traces)
+    fig.for_each_trace(
+        lambda trace:
+            trace.update(showlegend=False)
+            if (trace.name in names) else names.add(trace.name)
+    )
+    fig.update_layout(
+        width=width,
+        height=height,
+        autosize=True,
+        scene=dict(
+            aspectratio=dict(x=1.1, y=2.25, z=1.1),
+            xaxis=dict(title='UMAP 1'),
+            yaxis=dict(title='Batch Number'),
+            zaxis=dict(title='UMAP 2'),
+
+        ),
+        scene_camera=dict(
+            up=dict(x=0, y=0, z=1),
+            center=dict(x=0, y=0, z=0),
+            eye=dict(x=2.5, y=0.1, z=-0.1)
+        )
+    )
+    return fig
+
+
+def plotly_scatter_2d(traces_1, traces_2, width=1000, height=800):
+    """Produce a plotly scatter 3d plot
+    """
+    names = set()
+    fig = make_subplots(
+        rows=2,
+        cols=1,
+        shared_xaxes=True
+    )
+    fig.add_traces(
+        traces_1,
+        rows=[1 for i in range(len(traces_1))],
+        cols=[1 for i in range(len(traces_1))]
+    )
+    fig.add_traces(
+        traces_2,
+        rows=[2 for i in range(len(traces_2))],
+        cols=[1 for i in range(len(traces_2))]
+    )
+
+    names = set()
+    fig.for_each_trace(
+        lambda trace:
+            trace.update(showlegend=False)
+            if (trace.name in names) else names.add(trace.name)
+    )
+    fig.update_yaxes(
+        title_text='UMAP 1',
+        row=1,
+        col=1
+    )
+    fig.update_yaxes(
+        title_text='UMAP 2',
+        row=2,
+        col=1
+    )
+    fig.update_xaxes(
+        title_text='Batch Number',
+        row=2,
+        col=1
+    )
+    fig.update_layout(
+        width=width,
+        height=height,
+        autosize=True,
+    )
+    return fig
+
+
 def visualize_embedding(embedding_df, time_index, selected_images,
-                        selected_emeddings):
-    """Visualize UMAP traces as 3d Plots
+                        selected_emeddings, flatland):
+    """Visualize UMAP traces as 3d or 2d Plots
     """
     embedding_df = embedding_df[embedding_df['id'] <= selected_images]
     n_embeddings = embedding_df['batcn_n'].max() + 1
@@ -83,7 +163,13 @@ def visualize_embedding(embedding_df, time_index, selected_images,
     z = np.linspace(0, time_index, time_index)
     palette = px.colors.diverging.Spectral
     interpolated_traces = [f_umap_1(z), f_umap_2(z)]
-    traces = []
+
+    if flatland:
+        traces_1_umap = []
+        traces_2_umap = []
+    else:
+        traces_3_umap = []
+
     for image in range(n_images):
 
         if CATEGORY_MAPPER[classes[image]] in selected_emeddings:
@@ -91,48 +177,65 @@ def visualize_embedding(embedding_df, time_index, selected_images,
         else:
             visible = 'legendonly'
 
-        trace = go.Scatter3d(
-            x=interpolated_traces[0][image],
-            y=z,
-            z=interpolated_traces[1][image],
-            mode='lines',
-            line=dict(
-                color=palette[classes[image]],
-                width=1.5
-            ),
-            opacity=1,
-            legendgroup=f'Category {CATEGORY_MAPPER[classes[image]]}',
-            name=f'Category {CATEGORY_MAPPER[classes[image]]}',
-            visible=visible
+        if flatland:
+            # first dimesnion
+            trace_1_umap = go.Scatter(
+                x=z,
+                y=interpolated_traces[0][image],
+                mode='lines',
+                line=dict(
+                    color=palette[classes[image]],
+                    width=1.5
+                ),
+                opacity=1,
+                legendgroup=f'Category {CATEGORY_MAPPER[classes[image]]}',
+                name=f'Category {CATEGORY_MAPPER[classes[image]]}',
+                visible=visible
+            )
+            traces_1_umap.append(trace_1_umap)
+            # Second dimension
+            trace_2_umap = go.Scatter(
+                x=z,
+                y=interpolated_traces[1][image],
+                mode='lines',
+                line=dict(
+                    color=palette[classes[image]],
+                    width=1.5
+                ),
+                opacity=1,
+                legendgroup=f'Category {CATEGORY_MAPPER[classes[image]]}',
+                name=f'Category {CATEGORY_MAPPER[classes[image]]}',
+                visible=visible
+            )
+            traces_2_umap.append(trace_2_umap)
+        else:
+            trace_3_umap = go.Scatter3d(
+                x=interpolated_traces[0][image],
+                y=z,
+                z=interpolated_traces[1][image],
+                mode='lines',
+                line=dict(
+                    color=palette[classes[image]],
+                    width=1.5
+                ),
+                opacity=1,
+                legendgroup=f'Category {CATEGORY_MAPPER[classes[image]]}',
+                name=f'Category {CATEGORY_MAPPER[classes[image]]}',
+                visible=visible
+            )
+            traces_3_umap.append(trace_3_umap)
+
+    if flatland:
+        fig_1_2_umap = plotly_scatter_2d(
+            traces_1=traces_1_umap,
+            traces_2=traces_2_umap
         )
-        traces.append(trace)
-
-    names = set()
-    fig_embeddings = go.Figure(data=traces)
-    fig_embeddings.for_each_trace(
-        lambda trace:
-            trace.update(showlegend=False)
-            if (trace.name in names) else names.add(trace.name)
-    )
-    fig_embeddings.update_layout(
-        width=1000,
-        height=600,
-        autosize=True,
-        scene=dict(
-            aspectratio=dict(x=1.1, y=2.25, z=1.1),
-            xaxis=dict(title='UMAP 1'),
-            yaxis=dict(title='Batch Number'),
-            zaxis=dict(title='UMAP 2'),
-
-        ),
-        scene_camera=dict(
-            up=dict(x=0, y=0, z=1),
-            center=dict(x=0, y=0, z=0),
-            eye=dict(x=2.5, y=0.1, z=-0.1)
+        return fig_1_2_umap
+    else:
+        fig_3_umap = plotly_scatter_3d(
+            traces=traces_3_umap
         )
-    )
-
-    return fig_embeddings
+        return fig_3_umap
 
 
 @st.cache(hash_funcs={dict: lambda _: None})
@@ -152,8 +255,9 @@ def load_data(dataset_name):
     return images, conv_1, conv_2, embedding_df
 
 
+@st.cache(hash_funcs={dict: lambda _: None})
 def get_figures(images, conv_1, conv_2, embedding_df, image_index,
-                batch_number, selected_images, selected_emeddings):
+                batch_number, selected_images, selected_emeddings, flatland):
     """Get all the figures objects
     """
     fig_image, ax_image = plt.subplots(
@@ -184,10 +288,21 @@ def get_figures(images, conv_1, conv_2, embedding_df, image_index,
         embedding_df=embedding_df,
         time_index=batch_number,
         selected_images=selected_images,
-        selected_emeddings=selected_emeddings
+        selected_emeddings=selected_emeddings,
+        flatland=flatland
     )
 
-    return fig_image, fig_conv_1, fig_conv_2, fig_embeddings
+    figures = {
+        'fig_image': fig_image,
+        'fig_conv_1': fig_conv_1,
+        'fig_conv_2': fig_conv_2
+    }
+    if flatland:
+        figures['fig_embeddings_1_2'] = fig_embeddings
+    else:
+        figures['fig_embeddings_3'] = fig_embeddings
+
+    return figures
 
 
 def run_app():
@@ -251,22 +366,31 @@ def run_app():
     images, conv_1, conv_2, embedding_df = load_data('fashion_mnist')
 
     st.sidebar.title('Visualizer Parameters')
-    st.sidebar.header('Select Input')
 
+    st.sidebar.header('Training Stage')
+    batch_number = st.sidebar.slider(
+        'Select Batch Number',
+        min_value=0,
+        max_value=len(conv_1) - 1,
+        value=len(conv_1) - 1
+    )
+
+    st.sidebar.header('Filters Visualization')
     image_index = st.sidebar.selectbox(
-        'Category',
+        'Select Category',
         [CATEGORY_MAPPER[category] for category in range(10)]
     )
     image_index = INDEX_MAPPER[image_index]
 
+    st.sidebar.header('Embedding Visualization')
     selected_images = st.sidebar.slider(
-        'Images Embedded',
+        'Select N° Images Embedded',
         min_value=1,
         max_value=1000,
         value=200
     )
     selected_emeddings = st.sidebar.multiselect(
-        'Select Visualized Embeddings',
+        'Select Categories Embedded',
         [CATEGORY_MAPPER[category] for category in range(10)] + ['all'],
         default=['all']
     )
@@ -274,17 +398,16 @@ def run_app():
         selected_emeddings = [
             CATEGORY_MAPPER[category] for category in range(10)
         ]
-    st.sidebar.header('Select Training Stage')
-    batch_number = st.sidebar.slider(
-        'Batch Number',
-        min_value=0,
-        max_value=len(conv_1) - 1,
-        value=len(conv_1) - 1
+    flatland = st.sidebar.checkbox(
+        'Visualize Embedding in Flatland',
+        value=False
     )
+
+
 
     ###########################################################################
 
-    fig_image, fig_conv_1, fig_conv_2, fig_embs = get_figures(
+    figures = get_figures(
         images=images,
         conv_1=conv_1,
         conv_2=conv_2,
@@ -292,21 +415,25 @@ def run_app():
         image_index=image_index,
         batch_number=batch_number,
         selected_images=selected_images,
-        selected_emeddings=selected_emeddings
+        selected_emeddings=selected_emeddings,
+        flatland=flatland
     )
 
     with st.beta_expander('Convolutional Filters'):
         col1_image, col2_filters, col3_filters = st.beta_columns(3)
         col1_image.header('Input Image')
-        col1_image.pyplot(fig_image)
+        col1_image.pyplot(figures['fig_image'])
         col2_filters.header('First Convolution')
-        col2_filters.pyplot(fig_conv_1)
+        col2_filters.pyplot(figures['fig_conv_1'])
         col3_filters.header('Second Convolution')
-        col3_filters.pyplot(fig_conv_2)
+        col3_filters.pyplot(figures['fig_conv_2'])
 
     with st.beta_expander('Learned Embedding'):
         st.header('Temporal Alligned UMAP')
-        st.plotly_chart(fig_embs)
+        if flatland:
+            st.plotly_chart(figures['fig_embeddings_1_2'])
+        else:
+            st.plotly_chart(figures['fig_embeddings_3'])
 
 
 if __name__ == '__main__':
