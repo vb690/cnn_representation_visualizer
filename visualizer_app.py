@@ -315,7 +315,7 @@ def run_app():
 
     ###########################################################################
 
-    st.title('Anatomy of a Convolutional Neural Network')
+    st.title('The Learning Anatomy of a Convolutional Neural Network')
 
     col1_mnsit, col2_lenet = st.beta_columns(2)
     lenet = Image.open('images//header.png')
@@ -356,7 +356,8 @@ def run_app():
             80, 40 and 20 hidden units |
         | Activation |  Each layer with trainable parameters is \
             followed by a sigmoid function|
-        | Output | Fully connected layer with softmax activation function|
+        | Output | Fully connected layer with 10 hidden units and \
+            softmax activation function|
         """
     )
 
@@ -386,7 +387,7 @@ def run_app():
         'Select N° Images Embedded',
         min_value=1,
         max_value=1000,
-        value=200
+        value=350
     )
     selected_emeddings = st.sidebar.multiselect(
         'Select Categories Embedded',
@@ -422,15 +423,76 @@ def run_app():
         col1_image.pyplot(figures['fig_image'])
         col2_filters.header('First Convolution')
         col2_filters.pyplot(figures['fig_conv_1'])
+        col2_filters.markdown(
+            """
+            The first convolutional filters extrapolate global
+            features that mostly pertain the general structure of the image.
+            Such as the countour or large details of the represented object.
+            """
+        )
         col3_filters.header('Second Convolution')
         col3_filters.pyplot(figures['fig_conv_2'])
+        col3_filters.markdown(
+            """
+            The second convolutional filters work more locally extracting
+            minute details from the previous representation.
+            Such as lines, edges or textutre information.
+            """
+        )
 
     with st.beta_expander('Learned Embedding'):
         st.header('Temporal Alligned UMAP')
+        st.markdown(
+            """
+            Traditional Artificial Neural Network applications work under
+            the hypothesis that similarities between inputs with respect to
+            their targets can be represented by learning their spatial location
+            in a z-dimensional space (where z is the dimensionality of the
+            portion of the network producing the representation ) where
+            objects that are similar to each other also tend to apper closer in
+            space.
+
+            Uniform Manifold Approximation and Projection by McInnes et al.
+            is a dimension reduction technique that allows to make this spatial
+            property more evident.
+            """
+        )
         if flatland:
             st.plotly_chart(figures['fig_embeddings_1_2'])
         else:
             st.plotly_chart(figures['fig_embeddings_3'])
+        st.markdown(
+            """
+            We can see how the representation of each category of the
+            Fashion-MNIST learned by the last fully connected layer of
+            LeNet-5 (the one just before the final softmax
+            classifier) shift in space over training.
+            #### Factoids
+            * Obejcts like Ankle Boots, Sneakers and Sandals (i.e. footwear)
+            other than forming a compact group progressively move away from
+            thinks like pullovers.
+            * Shirts and Coats occupy almost the same space.
+            * Objects with low variability in shape like trousers have a
+            consistent compact representation while variable things like
+            dresses progressively spread out in space.
+            """
+        )
+
+    with st.beta_expander('References and Useful Links'):
+        st.markdown(
+            """
+            1. Xiao, Han, Kashif Rasul, and Roland Vollgraf. "Fashion-mnist: a
+            novel image dataset for benchmarking machine learning algorithms."
+            arXiv preprint arXiv:1708.07747 (2017).
+            2. LeCun, Yann, et al. "Backpropagation applied to handwritten zip
+            code recognition." Neural computation 1.4 (1989): 541-551.
+            3. McInnes, Leland, John Healy, and James Melville. "Umap: Uniform
+            manifold approximation and projection for dimension reduction."
+            arXiv preprint arXiv:1802.03426 (2018).
+            4. [Wesite UMAP](https://umap-learn.readthedocs.io/en/latest/)
+            5. [Temporal Alligned UMAP](https://umap-learn.readthedocs.io/en/latest/aligned_umap_politics_demo.html)
+            """
+        )
 
 
 if __name__ == '__main__':
