@@ -339,7 +339,7 @@ def run_app():
         architecture propsed by Yann LeCun et al. in 1989. It consists of
         seven layers implementing the basic operations of found in CNNs:
         convolution, pooling and fully connected. The lightweight
-        architecture employed for this project includes
+        architecture employed for this project has the following structure.
         """
     )
     col2_lenet.image(lenet, caption='LeNet-5')
@@ -444,17 +444,21 @@ def run_app():
         st.header('Temporal Alligned UMAP')
         st.markdown(
             """
-            Traditional Artificial Neural Network applications work under
-            the hypothesis that similarities between inputs with respect to
-            their targets can be represented by learning their spatial location
+            Traditional Artificial Neural Network applications work under the
+            hypothesis that similarities between inputs, with respect to their
+            targets, can be represented by learning their spatial location
             in a z-dimensional space (where z is the dimensionality of the
-            portion of the network producing the representation ) where
-            objects that are similar to each other also tend to apper closer in
-            space.
+            portion of the network producing the representation) where
+            objects that are similar to each other are also closer in space.
 
-            Uniform Manifold Approximation and Projection by McInnes et al.
-            is a dimension reduction technique that allows to make this spatial
-            property more evident.
+            For making this spatial property more evident we will leverage the
+            Uniform Manifold Approximation and Projection algorithm (UMAP)
+            by McInnes et al. UMAP is a dimension reduction technique that
+
+            1. Constructs a high dimensional graph representation of a given
+            dataset.
+            2. Then optimizes a low-dimensional version of the same graph to
+            be as structurally similar as possible to the original one.
             """
         )
         if flatland:
@@ -469,9 +473,10 @@ def run_app():
             classifier) shift in space over training.
             #### Factoids
             * Obejcts like Ankle Boots, Sneakers and Sandals (i.e. footwear)
-            other than forming a compact group progressively move away from
-            thinks like pullovers.
-            * Shirts and Coats occupy almost the same space.
+            form a compact group that progressively moves away from things
+            like pullovers.
+            * Higly similar objects like
+            Shirts and Coats occupy almost the same space.
             * Objects with low variability in shape like trousers have a
             consistent compact representation while variable things like
             dresses progressively spread out in space.
@@ -489,8 +494,11 @@ def run_app():
             3. McInnes, Leland, John Healy, and James Melville. "Umap: Uniform
             manifold approximation and projection for dimension reduction."
             arXiv preprint arXiv:1802.03426 (2018).
-            4. [Wesite UMAP](https://umap-learn.readthedocs.io/en/latest/)
-            5. [Temporal Alligned UMAP](https://umap-learn.readthedocs.io/en/latest/aligned_umap_politics_demo.html)
+            4. [Understanding UMAP]
+            (https://pair-code.github.io/understanding-umap/)
+            5. [Website UMAP](https://umap-learn.readthedocs.io/en/latest/)
+            6. [Temporal Alligned UMAP](https://umap-learn.readthedocs.
+            io/en/latest/aligned_umap_politics_demo.html)
             """
         )
 
