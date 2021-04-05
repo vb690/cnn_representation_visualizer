@@ -1,6 +1,10 @@
 
 # Anatomy of a Convolutional Neural Network
 
+<p align="center">
+  <img width="500" height="150" src="https://github.com/vb690/cnn_representation_visualizer/blob/main/images/header.png">
+</p>
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/vb690/cnn_representation_visualizer/main/visualizer_app.py)
 
 ## Motivation
@@ -21,7 +25,7 @@ For maximizing the observed differences and reducing memory overhead, the observ
 
 ## How to use  
 
-Open the app clicking on the streamlit badge on top of this page.
+Open the app clicking on the streamlit badge on top of this README.
 
 ## License
 
