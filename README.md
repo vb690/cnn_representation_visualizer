@@ -21,7 +21,7 @@ For maximizing the observed differences and reducing memory overhead, the observ
 
 ## How to use  
 
-Go to the live app clicking on the streamlit badge on top of this page.
+Open the app clicking on the streamlit badge on top of this page.
 
 ## License
 
