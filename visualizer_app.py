@@ -497,8 +497,7 @@ def run_app():
             4. [Understanding UMAP]
             (https://pair-code.github.io/understanding-umap/)
             5. [Website UMAP](https://umap-learn.readthedocs.io/en/latest/)
-            6. [Temporal Alligned UMAP](https://umap-learn.readthedocs.
-            io/en/latest/aligned_umap_politics_demo.html)
+            6. [Temporal Alligned UMAP](https://umap-learn.readthedocs.io/en/latest/aligned_umap_politics_demo.html)
             """
         )
 
