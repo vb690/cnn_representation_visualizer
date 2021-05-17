@@ -10,7 +10,18 @@ from tensorflow.keras.optimizers import Adam
 
 
 def create_model_encoders(X, y):
-    """Create a CNN model and realtive encoders
+    """Create a CNN model LeNET and realtive encoders.
+
+    Args:
+        X: a numpy array, input images to the LeNET model
+        y: a numpy array, target classes fot the LeNET model
+
+    Returns:
+        model: a keras model, compiled LeNET model
+        conv_1_enc: a keras model, encoder up to 1st convolution
+        conv_2_enc: a keras model, encoder up to 2st convolution
+        dense_enc: a keras model, encoder up to the last dense layer
+        pre-classifier
     """
     inp = Input((X.shape[1], X.shape[2], X.shape[3]))
 
@@ -63,6 +74,24 @@ def create_model_encoders(X, y):
 def get_representations(model, X_tr, y_tr, X_ts, conv_1_enc, conv_2_enc,
                         dense_enc, epochs):
     """Train model and get batch-to-batch generated representation
+
+    Args:
+        model: a keras model, compiled LeNET model
+        conv_1_enc: a keras model, encoder up to 1st convolution
+        conv_2_enc: a keras model, encoder up to 2st convolution
+        dense_enc: a keras model, encoder up to the last dense layer
+        pre-classifier
+        X_tr: a numpy array, training images for the model
+        y_tr: a numpy array, training targets for the model
+        X_ts: a numpy array, testing images that will be used for generating
+        the representations
+        epochs: an int, specify the number of full swipe through all the
+        batches in X_tr
+
+    Returns:
+        representations: a dictionary where keys are labels indicating the type
+        of encoder while values are the representations extracted by said
+        encoder
     """
     representations = {
         'conv_1': {},
