@@ -32,7 +32,7 @@ def run_app():
 
     st.title('The Learning Anatomy of a Convolutional Neural Network')
 
-    col1_mnsit, col2_lenet = st.beta_columns(2)
+    col1_mnsit, col2_lenet = st.columns(2)
     lenet = Image.open('images//header.png')
     fmnist = Image.open('images//fashion_mnist.png')
     col1_mnsit.header('Fashion-MNSIT Dataset')
@@ -133,8 +133,8 @@ def run_app():
         category_mapper=CATEGORY_MAPPER
     )
 
-    with st.beta_expander('Convolutional Filters'):
-        col1_image, col2_filters, col3_filters = st.beta_columns(3)
+    with st.expander('Convolutional Filters'):
+        col1_image, col2_filters, col3_filters = st.columns(3)
         col1_image.header('Input Image')
         col1_image.pyplot(figures['fig_image'])
         col2_filters.header('First Convolution')
@@ -156,7 +156,7 @@ def run_app():
             """
         )
 
-    with st.beta_expander('Learned Embedding'):
+    with st.expander('Learned Embedding'):
         st.header('Temporal Alligned UMAP')
         st.markdown(
             """
@@ -199,7 +199,7 @@ def run_app():
             """
         )
 
-    with st.beta_expander('References and Useful Links'):
+    with st.expander('References and Useful Links'):
         st.markdown(
             """
             1. Xiao, Han, Kashif Rasul, and Roland Vollgraf. "Fashion-mnist: a
